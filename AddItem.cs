@@ -25,15 +25,7 @@ namespace func
             var content = new StreamReader(req.Body).ReadToEnd();
             log.LogInformation($"Got string with {content.Length} characters.");
 
-            IPAddress author;
-            if (req.Headers["X-Forwarded-For"].Count < 1 || !IPAddress.TryParse(req.Headers["X-Forwarded-For"], out author)) {
-                log.LogWarning("Could not parse IP address from 'X-Forwarded-For' header. Ignoring request.");
-                var result = new ContentResult();
-                result.StatusCode = 500;
-                result.ContentType = "text/plain";
-                result.Content = "500 Internal Server Error\r\n\r\nUnable to read IP address.";
-                return result;
-            };
+            var author = req.HttpContext.Connection.RemoteIpAddress;
             log.LogInformation($"It looks like this message came from '{author}'.");
 
             log.LogInformation("Connecting to PostgreSQL database...");
