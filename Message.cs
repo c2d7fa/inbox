@@ -1,7 +1,7 @@
 using System;
 using System.Net;
 
-namespace func {
+namespace Inbox {
     public class Message {
         public Guid Uuid { get; private set; }
         public DateTime Created { get; private set; }

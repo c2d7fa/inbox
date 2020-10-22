@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using Newtonsoft.Json;
 
-namespace func
+namespace Inbox
 {
     // https://stackoverflow.com/a/18669492
     class IPAddressJsonConverter : JsonConverter

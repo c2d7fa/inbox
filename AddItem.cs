@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using Npgsql;
 using System.Net;
 
-namespace func
+namespace Inbox
 {
     public static class AddItem
     {
