@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-using Npgsql;
 using System.Net;
+using Microsoft.Azure.Cosmos.Table;
 
 namespace Inbox
 {
@@ -19,6 +19,7 @@ namespace Inbox
         [FunctionName("AddItem")]
         public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+            [Table("UnreadMessages")] CloudTable unreadMessagesTable,
             ILogger log)
         {
             log.LogInformation("Reading body of request...");
@@ -28,18 +29,12 @@ namespace Inbox
             var author = req.HttpContext.Connection.RemoteIpAddress;
             log.LogInformation($"It looks like this message came from '{author}'.");
 
-            log.LogInformation("Connecting to PostgreSQL database...");
-            var connectionString = $"Host=52.236.131.252;Username=postgres;Password=verysecret;Database=postgres";
-            using var connection = new NpgsqlConnection(connectionString);
-            connection.Open();
-            log.LogInformation("Successfully connected to database.");
-
             log.LogInformation("Inserting message into database...");
-            using (var command = new NpgsqlCommand("INSERT INTO message (id, author, created, content) VALUES (uuid_generate_v4(), @author, NOW(), @content)", connection)) {
-                command.Parameters.AddWithValue("author", author);
-                command.Parameters.AddWithValue("content", content);
-                command.ExecuteNonQuery();
-            }
+            var entity = new DynamicTableEntity(author.ToString(), Guid.NewGuid().ToString(), "", new Dictionary<string, EntityProperty>{
+                { "Created", new EntityProperty(DateTime.UtcNow) },
+                { "Content", new EntityProperty(content) },
+            });
+            unreadMessagesTable.Execute(TableOperation.Insert(entity));
             log.LogInformation("Successfully inserted message.");
 
             return new OkResult();

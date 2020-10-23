@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-using Npgsql;
 using System.Net;
+using Microsoft.Azure.Cosmos.Table;
 
 namespace Inbox
 {
@@ -19,24 +19,21 @@ namespace Inbox
         [FunctionName("AllItems")]
         public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
+            [Table("UnreadMessages")] CloudTable unreadMessagesTable,
             ILogger log)
         {
-            var connectionString = $"Host=52.236.131.252;Username=postgres;Password=verysecret;Database=postgres";
-
-            log.LogInformation("Connecting to PostgreSQL database...");
-            using var connection = new NpgsqlConnection(connectionString);
-            connection.Open();
-            log.LogInformation("Successfully connected to database.");
-
             var messages = new List<Message>();
 
-            using (var command = new NpgsqlCommand("SELECT * FROM message", connection)) {
-                 using var reader = command.ExecuteReader();
-                 while (reader.Read()) {
-                     var message = new Message(reader.GetGuid(0), reader.GetDateTime(1), reader.GetFieldValue<IPAddress>(2), reader.GetString(3));
-                     log.LogInformation("Got message: " + JsonConvert.SerializeObject(message, new JsonSerializerSettings().WithIPAddress()));
-                     messages.Add(message);
-                 }
+            var entities = unreadMessagesTable.ExecuteQuery(new TableQuery());
+            foreach (var entity in entities) {
+                var uuid = Guid.Parse(entity.RowKey);
+                var created_ = entity.Properties["Created"].DateTime;
+                var author = IPAddress.Parse(entity.PartitionKey);
+                var content = entity.Properties["Content"].StringValue;
+
+                if (created_ is DateTime created) {
+                    messages.Add(new Message(uuid, created, author, content));
+                }
             }
 
             return new JsonResult(messages, new JsonSerializerSettings().WithIPAddress());
