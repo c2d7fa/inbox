@@ -20,7 +20,7 @@ namespace Inbox
     {
         [FunctionName("AllItemsPage")]
         public static IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
             [Table("UnreadMessages")] CloudTable unreadMessagesTable,
             ILogger log)
         {
@@ -42,11 +42,13 @@ namespace Inbox
                 log.LogInformation("Message: " + message.Content);
             }
 
-            var template = "<ol>{% for message in messages %}<li>{{ message.content }}</li>{% endfor %}</ol>";
+            var data = new {
+                Messages = messages,
+            };
 
             var response = new ContentResult();
             response.ContentType = "text/html";
-            response.Content = Template.ParseLiquid(template).Render(new { Messages = messages });
+            response.Content = Template.Parse(File.ReadAllText("static/list.sbnhtml")).Render(data);
             return response;
         }
     }

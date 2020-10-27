@@ -1,0 +1,7 @@
+<html>
+    <ol>
+        {{~ for $message in messages ~}}
+        <li>{{ $message.content }}</li>
+        {{~ end ~}}
+    </ol>
+</html>
