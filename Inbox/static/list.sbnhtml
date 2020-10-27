@@ -18,6 +18,10 @@
                 padding: 0.25rem 1rem;
                 border: 1px solid #eee;
             }
+
+            td form {
+                margin: 0;
+            }
         </style>
     </head>
     <body>
@@ -28,6 +32,7 @@
                     <td>Date</td>
                     <td>Time</td>
                     <td>IP Address</td>
+                    <td></td>
                 </tr>
             </thead>
             <tbody>
@@ -37,6 +42,11 @@
                     <td>{{ $message.created | date.to_string "%a, %d %b, %Y" }}</td>
                     <td>{{ $message.created | date.to_string "%T" }}</td>
                     <td><code>{{ $message.author }}</code></td>
+                    <td>
+                        <form action="/api/MarkRead?message={{ $message.uuid }}" method="post">
+                            <input type="submit" value="Read"/>
+                        </form>
+                    </td>
                 </tr>
                 {{~ end ~}}
             </tbody>
