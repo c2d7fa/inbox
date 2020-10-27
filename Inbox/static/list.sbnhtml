@@ -1,7 +1,45 @@
 <html>
-    <ol>
-        {{~ for $message in messages ~}}
-        <li>{{ $message.content }}</li>
-        {{~ end ~}}
-    </ol>
+    <head>
+        <title>Inbox ({{ messages | array.size}})</title>
+        <style>
+            body {
+                font: 1.2em sans-serif;
+            }
+
+            table {
+                border-collapse: collapse;
+            }
+
+            thead {
+                font-weight: bold;
+            }
+
+            td {
+                padding: 0.25rem 1rem;
+                border: 1px solid #eee;
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            <thead>
+                <tr>
+                    <td>Message</td>
+                    <td>Date</td>
+                    <td>Time</td>
+                    <td>IP Address</td>
+                </tr>
+            </thead>
+            <tbody>
+                {{~ for $message in messages ~}}
+                <tr>
+                    <td>{{ $message.content }}</td>
+                    <td>{{ $message.created | date.to_string "%a, %d %b, %Y" }}</td>
+                    <td>{{ $message.created | date.to_string "%T" }}</td>
+                    <td><code>{{ $message.author }}</code></td>
+                </tr>
+                {{~ end ~}}
+            </tbody>
+        </table>
+    </body>
 </html>
