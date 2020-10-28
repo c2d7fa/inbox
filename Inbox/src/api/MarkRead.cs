@@ -35,11 +35,11 @@ namespace Inbox
               log.LogWarning("Message not found. Ignoring.");
             }
 
-            var response = req.HttpContext.Response;
-            response.StatusCode = 303;
-            response.Headers.Add("Location", "/api/AllItemsPage");
+            if (HttpHelper.HandlePageRedirect(req)) {
+              return new EmptyResult();
+            }
 
-            return new EmptyResult();
+            return new OkResult();
         }
 
         private static DynamicTableEntity GetEntityByRowKey(CloudTable table, string rowKey) {

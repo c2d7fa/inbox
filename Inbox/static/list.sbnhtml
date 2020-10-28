@@ -44,6 +44,7 @@
                     <td><code>{{ $message.author }}</code></td>
                     <td>
                         <form action="/api/MarkRead?message={{ $message.uuid }}" method="post">
+                            <input type="hidden" name="page" value="list"/>
                             <input type="submit" value="Read"/>
                         </form>
                     </td>

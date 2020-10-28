@@ -22,8 +22,12 @@ namespace Inbox
             [Table("UnreadMessages")] CloudTable unreadMessagesTable,
             ILogger log)
         {
-            log.LogInformation("Reading body of request...");
-            var content = new StreamReader(req.Body).ReadToEnd();
+            log.LogInformation("Reading new message content...");
+            var content = HttpHelper.GetForm(req, "content");
+            if (content == null) {
+                log.LogWarning("Could not get content from message.");
+                return new BadRequestResult();
+            }
             log.LogInformation($"Got string with {content.Length} characters.");
 
             var author = req.HttpContext.Connection.RemoteIpAddress;
@@ -36,6 +40,10 @@ namespace Inbox
             });
             unreadMessagesTable.Execute(TableOperation.Insert(entity));
             log.LogInformation("Successfully inserted message.");
+
+            if (HttpHelper.HandlePageRedirect(req)) {
+                return new EmptyResult();
+            }
 
             return new OkResult();
         }
