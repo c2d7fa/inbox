@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Inbox</title>
+        <title>Inbox &ndash; Send</title>
         <style>
             body {
                 font: 1.2em sans-serif;
@@ -23,6 +23,7 @@
                 margin: 0;
             }
         </style>
+        <link rel="icon" href="https://unpkg.com/mono-icons@1.0.0/svg/inbox.svg" type="image/svg+xml"/>
     </head>
     <body>
         <form action="/api/AddItem" method="post">
