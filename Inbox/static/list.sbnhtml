@@ -52,5 +52,6 @@
                 {{~ end ~}}
             </tbody>
         </table>
+        <nav><a href="/api/Page?path=add">send message</a></nav>
     </body>
 </html>
