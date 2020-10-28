@@ -21,6 +21,7 @@ namespace Inbox
         public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             [Table("UnreadMessages")] CloudTable unreadMessagesTable,
+            ExecutionContext executionContext,
             ILogger log)
         {
             if (!req.Query.ContainsKey("path")) {
@@ -29,15 +30,16 @@ namespace Inbox
             }
             string path = req.Query["path"];
 
-            var file = Path.Combine("static", path + ".sbnhtml");
+            var staticRoot = Path.Combine(executionContext.FunctionAppDirectory, "static");
+            var file = Path.Combine(staticRoot, path + ".sbnhtml");
 
-            if (!Path.GetFullPath(file).StartsWith(Path.GetFullPath("static") + Path.DirectorySeparatorChar)) {
+            if (!Path.GetFullPath(file).StartsWith(Path.GetFullPath(staticRoot) + Path.DirectorySeparatorChar)) {
                 log.LogWarning($"Path '{path}' would escape root directory");
                 return new BadRequestResult();
             }
 
             if (!File.Exists(file)) {
-                log.LogWarning($"Tried to access non-existent page '{file}'");
+                log.LogWarning($"Tried to access non-existent page '{file}' at full path '{Path.GetFullPath(file)}'");
                 return new NotFoundResult();
             }
 
