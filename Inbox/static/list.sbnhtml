@@ -39,7 +39,7 @@
             <tbody>
                 {{~ for $message in messages ~}}
                 <tr>
-                    <td>{{ $message.content }}</td>
+                    <td>{{ $message.content | html.escape }}</td>
                     <td>{{ $message.created | date.to_string "%a, %d %b, %Y" }}</td>
                     <td>{{ $message.created | date.to_string "%T" }}</td>
                     <td><code>{{ $message.author }}</code></td>
