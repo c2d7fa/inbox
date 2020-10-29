@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Inbox &ndash; {{ messages | array.size}} Unread</title>
+        <title>Inbox {{ if messages | array.size > 0 -}} &ndash; {{ messages | array.size}} Unread {{- end }}</title>
         <style>
             body {
                 font: 1.2em sans-serif;
@@ -26,6 +26,7 @@
         <link rel="icon" href="https://unpkg.com/mono-icons@1.0.0/svg/inbox.svg" type="image/svg+xml"/>
     </head>
     <body>
+        {{~ if messages | array.size > 0 ~}}
         <table>
             <thead>
                 <tr>
@@ -53,6 +54,9 @@
                 {{~ end ~}}
             </tbody>
         </table>
+        {{~ else ~}}
+        <div style="font-style: italic;">No unread messages</div>
+        {{~ end ~}}
         <nav><a href="/api/Page?path=add">send message</a></nav>
     </body>
 </html>
