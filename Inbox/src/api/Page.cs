@@ -21,6 +21,7 @@ namespace Inbox
         public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             [Table("UnreadMessages")] CloudTable unreadMessagesTable,
+            [Table("Authentication")] CloudTable authenticationTable,
             ExecutionContext executionContext,
             ILogger log)
         {
@@ -41,6 +42,11 @@ namespace Inbox
             if (!File.Exists(file)) {
                 log.LogWarning($"Tried to access non-existent page '{file}' at full path '{Path.GetFullPath(file)}'");
                 return new NotFoundResult();
+            }
+
+            if (Path.GetFileName(file) == "list.sbnhtml" && !Authentication.IsAuthenticated(req, authenticationTable)) {
+                log.LogInformation($"Unauthenticated user tried to access listing page.");
+                return new UnauthorizedResult();
             }
 
             var context = new TemplateContext();
