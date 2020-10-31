@@ -9,6 +9,16 @@ namespace Inbox {
     }
 
     public static bool IsAuthenticated(HttpRequest request, CloudTable authenticationTable) {
+      return IsAuthenticatedByCookie(request, authenticationTable) || IsAuthenticatedByQuery(request, authenticationTable);
+    }
+
+    public static bool IsAuthenticatedByQuery(HttpRequest request, CloudTable authenticationTable) {
+      var token = request.Query["token"];
+      if (token.Count != 1) return false;
+      return IsValidToken(token[0], authenticationTable);
+    }
+
+    public static bool IsAuthenticatedByCookie(HttpRequest request, CloudTable authenticationTable) {
       var token = request.Cookies["InboxAuthenticationToken"];
       if (token == null) return false;
       return IsValidToken(token, authenticationTable);

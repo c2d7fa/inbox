@@ -20,8 +20,14 @@ namespace Inbox
         public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             [Table("UnreadMessages")] CloudTable unreadMessagesTable,
+            [Table("Authentication")] CloudTable authenticationTable,
             ILogger log)
         {
+            if (!Authentication.IsAuthenticated(req, authenticationTable)) {
+                log.LogInformation("User was not authenticated when getting all tables");
+                return new UnauthorizedResult();
+            }
+
             var messages = new List<Message>();
 
             var entities = unreadMessagesTable.ExecuteQuery(new TableQuery());

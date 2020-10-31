@@ -16,8 +16,14 @@ namespace Inbox
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             [Table("UnreadMessages")] CloudTable unreadMessagesTable,
             [Table("ReadMessages")] CloudTable readMessagesTable,
+            [Table("Authentication")] CloudTable authenticationTable,
             ILogger log)
         {
+            if (!Authentication.IsAuthenticated(req, authenticationTable)) {
+                log.LogInformation("User was not authenticated when getting all tables");
+                return new UnauthorizedResult();
+            }
+
             log.LogInformation("Reading message UUID...");
             if (!req.Query.ContainsKey("message")) {
               log.LogWarning("Got invalid request from client: No message UUID");
