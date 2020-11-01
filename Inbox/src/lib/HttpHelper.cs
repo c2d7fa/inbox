@@ -6,7 +6,7 @@ namespace Inbox {
       if (GetForm(req, "page") != null) {
         var response = req.HttpContext.Response;
         response.StatusCode = 303;
-        response.Headers.Add("Location", "/api/Page?path=" + GetForm(req, "page"));
+        response.Headers.Add("Location", "/" + GetForm(req, "page"));
         return true;
       } else {
         return false;

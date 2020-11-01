@@ -31,6 +31,17 @@ namespace Inbox
             }
             string path = req.Query["path"];
 
+            if (path == "") {
+                var redirectResponse = req.HttpContext.Response;
+                redirectResponse.StatusCode = 303;
+                if (Authentication.IsAuthenticated(req, authenticationTable)) {
+                    redirectResponse.Headers.Add("Location", "/list");
+                } else {
+                    redirectResponse.Headers.Add("Location", "/add");
+                }
+                return new EmptyResult();
+            }
+
             var staticRoot = Path.Combine(executionContext.FunctionAppDirectory, "static");
             var file = Path.Combine(staticRoot, path + ".sbnhtml");
 
