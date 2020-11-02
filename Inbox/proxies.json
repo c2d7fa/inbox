@@ -7,6 +7,13 @@
       },
       "backendUri": "https://localhost/api/{route}"
     },
+    "static-manifest": {
+      "matchCondition": {
+        "methods": ["GET"],
+        "route": "/manifest.webmanifest"
+      },
+      "backendUri": "https://localhost/api/Static?path=manifest.webmanifest&type=application/json"
+    },
     "pages": {
       "matchCondition": {
         "methods": ["GET"],

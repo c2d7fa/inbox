@@ -1,0 +1,14 @@
+{
+  "name": "Inbox",
+  "start_url": "/add",
+  "scope": "/",
+  "display": "standalone",
+  "share_target": {
+    "action": "share",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}
