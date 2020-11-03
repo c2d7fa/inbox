@@ -28,12 +28,12 @@
       },
       "backendUri": "https://localhost/api/Static?path=service-worker.js&type=text/javascript"
     },
-    "pages": {
+    "index": {
       "matchCondition": {
         "methods": ["GET"],
-        "route": "/{*path}"
+        "route": "/"
       },
-      "backendUri": "https://localhost/api/Page?path={path}"
+      "backendUri": "https://localhost/api/Page?path=index"
     }
   }
 }

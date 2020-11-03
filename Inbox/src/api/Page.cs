@@ -31,17 +31,6 @@ namespace Inbox
             }
             string path = req.Query["path"];
 
-            if (path == "") {
-                var redirectResponse = req.HttpContext.Response;
-                redirectResponse.StatusCode = 303;
-                if (Authentication.IsAuthenticated(req, authenticationTable)) {
-                    redirectResponse.Headers.Add("Location", "/list");
-                } else {
-                    redirectResponse.Headers.Add("Location", "/add");
-                }
-                return new EmptyResult();
-            }
-
             var staticRoot = Path.Combine(executionContext.FunctionAppDirectory, "static");
             var file = Path.Combine(staticRoot, path + ".sbnhtml");
 
@@ -53,11 +42,6 @@ namespace Inbox
             if (!File.Exists(file)) {
                 log.LogWarning($"Tried to access non-existent page '{file}' at full path '{Path.GetFullPath(file)}'");
                 return new NotFoundResult();
-            }
-
-            if (Path.GetFileName(file) == "list.sbnhtml" && !Authentication.IsAuthenticated(req, authenticationTable)) {
-                log.LogInformation($"Unauthenticated user tried to access listing page.");
-                return new UnauthorizedResult();
             }
 
             var context = new TemplateContext();
@@ -72,6 +56,12 @@ namespace Inbox
                         memoized.Add("messages", GetMessages(unreadMessagesTable, log));
                     }
                     value = memoized["messages"];
+                    return true;
+                } else if (variable.Name == "authenticated") {
+                    if (!memoized.ContainsKey("authenticated")) {
+                        memoized.Add("authenticated", Authentication.IsAuthenticated(req, authenticationTable));
+                    }
+                    value = memoized["authenticated"];
                     return true;
                 } else {
                     value = null;

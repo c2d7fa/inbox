@@ -2,7 +2,7 @@
   "name": "Inbox",
   "short_name": "Inbox",
   "description": "Inbox",
-  "start_url": "/add",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#e0e2e7",

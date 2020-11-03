@@ -25,8 +25,22 @@
         </style>
         <link rel="icon" href="https://unpkg.com/mono-icons@1.0.0/svg/inbox.svg" type="image/svg+xml"/>
         <link rel="manifest" href="/manifest.webmanifest"/>
+        <script>
+            if ("serviceWorker" in navigator) {
+                navigator.serviceWorker.register("/service-worker.js");
+            }
+        </script>
     </head>
     <body>
+        <h1>New Message</h1>
+        <form action="/api/AddItem" method="post">
+            <input type="hidden" name="page" value=""/>
+            <textarea name="content"></textarea>
+            <div><input type="submit" value="Submit"/></div>
+        </form>
+
+        {{~ if authenticated ~}}
+        <h1>Inbox</h1>
         {{~ if messages | array.size > 0 ~}}
         <table>
             <thead>
@@ -47,7 +61,7 @@
                     <td><code>{{ $message.author }}</code></td>
                     <td>
                         <form action="/api/MarkRead?message={{ $message.uuid }}" method="post">
-                            <input type="hidden" name="page" value="list"/>
+                            <input type="hidden" name="page" value=""/>
                             <input type="submit" value="Read"/>
                         </form>
                     </td>
@@ -58,6 +72,6 @@
         {{~ else ~}}
         <div style="font-style: italic;">No unread messages</div>
         {{~ end ~}}
-        <nav><a href="/add">send message</a></nav>
+        {{~ end ~}}
     </body>
 </html>
