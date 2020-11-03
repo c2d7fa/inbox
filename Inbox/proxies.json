@@ -1,11 +1,32 @@
 {
   "$schema": "http://json.schemastore.org/proxies",
   "proxies": {
-    "api":{
+    "api": {
       "matchCondition": {
         "route": "/api/{*route}"
       },
       "backendUri": "https://localhost/api/{route}"
+    },
+    "static-manifest": {
+      "matchCondition": {
+        "methods": ["GET"],
+        "route": "/manifest.webmanifest"
+      },
+      "backendUri": "https://localhost/api/Static?path=manifest.webmanifest&type=application/json"
+    },
+    "static-png": {
+      "matchCondition": {
+        "methods": ["GET"],
+        "route": "/{path}.png"
+      },
+      "backendUri": "https://localhost/api/Static?path={path}.png&type=image/png"
+    },
+    "service-worker": {
+      "matchCondition": {
+        "methods": ["GET"],
+        "route": "/service-worker.js"
+      },
+      "backendUri": "https://localhost/api/Static?path=service-worker.js&type=text/javascript"
     },
     "pages": {
       "matchCondition": {
