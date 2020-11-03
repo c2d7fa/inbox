@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Inbox {{ if messages | array.size > 0 -}} &ndash; {{ messages | array.size}} Unread {{- end }}</title>
+        <title>Inbox {{ if authenticated && (messages | array.size > 0) -}} &ndash; {{ messages | array.size}} Unread {{- end }}</title>
         <style>
             body {
                 font: 1.2em sans-serif;
