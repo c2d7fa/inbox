@@ -90,9 +90,7 @@ namespace Inbox
                 }
             }
 
-            foreach (var message in messages) {
-                log.LogInformation("Message: " + message.Content);
-            }
+            messages.Sort((a, b) => a.Created.CompareTo(b.Created));
 
             return messages;
         }
