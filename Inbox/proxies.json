@@ -21,6 +21,13 @@
       },
       "backendUri": "https://localhost/api/Static?path={path}.png&type=image/png"
     },
+    "static-css": {
+      "matchCondition": {
+        "methods": ["GET"],
+        "route": "/{path}.css"
+      },
+      "backendUri": "https://localhost/api/Static?path={path}.css&type=text/css"
+    },
     "service-worker": {
       "matchCondition": {
         "methods": ["GET"],
