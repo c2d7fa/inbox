@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -39,7 +40,17 @@ namespace Inbox
         return new BadRequestResult();
       }
 
-      // [TODO] Actually add the message to the DB!
+      log.LogInformation($"Adding shared message with {message.Length} characters...");
+
+      var author = req.HttpContext.Connection.RemoteIpAddress;
+      log.LogInformation($"It looks like this message came from '{author}'.");
+
+      log.LogInformation("Inserting message into database...");
+      var entity = new DynamicTableEntity(author.ToString(), Guid.NewGuid().ToString(), "", new Dictionary<string, EntityProperty>{
+          { "Created", new EntityProperty(DateTime.UtcNow) },
+          { "Content", new EntityProperty(message) },
+      });
+      unreadMessagesTable.Execute(TableOperation.Insert(entity));
 
       var response = new ContentResult();
       response.ContentType = "text/plain";
