@@ -39,10 +39,7 @@ namespace Inbox
 
             log.LogInformation($"Returning static resource '{Path.GetFullPath(file)}'");
 
-            var response = new ContentResult();
-            response.ContentType = contentType;
-            response.Content = File.ReadAllText(file);
-            return response;
+            return new FileContentResult(File.ReadAllBytes(file), contentType);
         }
     }
 }
