@@ -14,6 +14,13 @@
       },
       "backendUri": "https://localhost/api/Static?path=manifest.webmanifest&type=application/json"
     },
+    "service-worker": {
+      "matchCondition": {
+        "methods": ["GET"],
+        "route": "/service-worker.js"
+      },
+      "backendUri": "https://localhost/api/Static?path=service-worker.js&type=text/javascript"
+    },
     "pages": {
       "matchCondition": {
         "methods": ["GET"],

@@ -1,10 +1,28 @@
 {
   "name": "Inbox",
+  "short_name": "Inbox",
+  "description": "Inbox",
   "start_url": "/add",
   "scope": "/",
   "display": "standalone",
+  "background_color": "#e0e2e7",
+  "theme_color": "#e0e2e7",
+  "icons": [
+    {
+      "src": "https://cdn.glitch.com/537884d8-2d6f-40d1-b837-1f86ed4ae80a%2Ficon-192.png?1543523488495",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn.glitch.com/537884d8-2d6f-40d1-b837-1f86ed4ae80a%2Ficon-512.png?1543523488534",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
   "share_target": {
-    "action": "share",
+    "action": "/share",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
     "params": {
       "title": "title",
       "text": "text",
