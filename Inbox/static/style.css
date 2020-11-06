@@ -19,6 +19,10 @@ thead {
   font-weight: bold;
 }
 
+tr:hover {
+  background-color: #f6f6f6;
+}
+
 td {
   padding: 0.25rem 1rem;
   border: 1px solid #eee;
