@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Web;
 
 namespace Inbox {
     public class Message {
@@ -13,6 +14,16 @@ namespace Inbox {
             this.Created = created;
             this.Author = author;
             this.Content = content;
+        }
+
+        public string HtmlContent {
+            get {
+                if (Content.StartsWith("https://")) {
+                    return $"<a href=\"{HttpUtility.HtmlAttributeEncode(Content)}\">{HttpUtility.HtmlEncode(Content)}</a>";
+                } else {
+                    return HttpUtility.HtmlEncode(Content);
+                }
+            }
         }
     }
 }
