@@ -1,27 +1,25 @@
-using System.Linq;
+using Inbox.TableStorage;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.Cosmos.Table;
 
 namespace Inbox {
   public static class Authentication {
-    public static bool IsValidToken(string token, CloudTable authenticationTable) {
-      return authenticationTable.ExecuteQuery(new TableQuery().Where(TableQuery.GenerateFilterCondition("RowKey", "eq", token))).Count() > 0;
+    private static bool IsValidToken(string token, ITable authenticationTable) {
+      return authenticationTable.HasRow(token);
     }
 
-    public static bool IsAuthenticated(HttpRequest request, CloudTable authenticationTable) {
+    public static bool IsAuthenticated(HttpRequest request, ITable authenticationTable) {
       return IsAuthenticatedByCookie(request, authenticationTable) || IsAuthenticatedByQuery(request, authenticationTable);
     }
 
-    public static bool IsAuthenticatedByQuery(HttpRequest request, CloudTable authenticationTable) {
+    private static bool IsAuthenticatedByQuery(HttpRequest request, ITable authenticationTable) {
       var token = request.Query["token"];
       if (token.Count != 1) return false;
       return IsValidToken(token[0], authenticationTable);
     }
 
-    public static bool IsAuthenticatedByCookie(HttpRequest request, CloudTable authenticationTable) {
+    private static bool IsAuthenticatedByCookie(HttpRequest request, ITable authenticationTable) {
       var token = request.Cookies["InboxAuthenticationToken"];
-      if (token == null) return false;
-      return IsValidToken(token, authenticationTable);
+      return token != null && IsValidToken(token, authenticationTable);
     }
   }
 }

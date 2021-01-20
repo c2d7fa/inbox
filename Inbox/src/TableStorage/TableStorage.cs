@@ -27,5 +27,6 @@ namespace Inbox.TableStorage {
 
     public interface ITable {
         void Insert(IEntity entity);
+        bool HasRow(string key);
     }
 }

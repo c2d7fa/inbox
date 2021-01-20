@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.IO;
+using Inbox.TableStorage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -59,7 +60,7 @@ namespace Inbox
                     return true;
                 } else if (variable.Name == "authenticated") {
                     if (!memoized.ContainsKey("authenticated")) {
-                        memoized.Add("authenticated", Authentication.IsAuthenticated(req, authenticationTable));
+                        memoized.Add("authenticated", Authentication.IsAuthenticated(req, new AzureTable(authenticationTable)));
                     }
                     value = memoized["authenticated"];
                     return true;

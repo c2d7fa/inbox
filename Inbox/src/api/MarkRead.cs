@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Inbox.TableStorage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -19,7 +20,7 @@ namespace Inbox
             [Table("Authentication")] CloudTable authenticationTable,
             ILogger log)
         {
-            if (!Authentication.IsAuthenticated(req, authenticationTable)) {
+            if (!Authentication.IsAuthenticated(req, new AzureTable(authenticationTable))) {
                 log.LogInformation("User was not authenticated when getting all tables");
                 return new UnauthorizedResult();
             }

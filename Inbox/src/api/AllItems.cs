@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 using System.Net;
+using Inbox.TableStorage;
 using Microsoft.Azure.Cosmos.Table;
 
 namespace Inbox
@@ -23,7 +24,7 @@ namespace Inbox
             [Table("Authentication")] CloudTable authenticationTable,
             ILogger log)
         {
-            if (!Authentication.IsAuthenticated(req, authenticationTable)) {
+            if (!Authentication.IsAuthenticated(req, new AzureTable(authenticationTable))) {
                 log.LogInformation("User was not authenticated when getting all tables");
                 return new UnauthorizedResult();
             }

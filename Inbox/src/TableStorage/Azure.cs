@@ -15,8 +15,16 @@ namespace Inbox.TableStorage {
             foreach (var (key, value) in entity.Properties) {
                 properties[key] = new EntityProperty(value);
             }
+
             var azureEntity = new DynamicTableEntity(entity.Partition, entity.Row, "", properties);
             cloudTable.Execute(TableOperation.Insert(azureEntity));
+        }
+
+        public bool HasRow(string key) {
+            var query = new TableQuery().Where(
+                TableQuery.GenerateFilterCondition("RowKey", "eq", key)
+            );
+            return cloudTable.ExecuteQuery(query).Any();
         }
     }
 }
