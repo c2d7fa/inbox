@@ -13,13 +13,9 @@ namespace Inbox {
       }
     }
 
-    public static string GetForm(HttpRequest req, string key) {
+    public static string? GetForm(HttpRequest req, string key) {
       var values = req.Form[key];
-      if (values.Count == 1) {
-          return values[0];
-      } else {
-          return null;
-      }
+      return values.Count == 1 ? values[0] : null;
     }
   }
 }
