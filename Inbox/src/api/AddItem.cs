@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using System.Net;
 using Microsoft.Azure.Cosmos.Table;
 
+using Inbox.TableStorage;
+
 namespace Inbox
 {
     public static class AddItem
@@ -34,11 +36,10 @@ namespace Inbox
             log.LogInformation($"It looks like this message came from '{author}'.");
 
             log.LogInformation("Inserting message into database...");
-            var entity = new DynamicTableEntity(author.ToString(), Guid.NewGuid().ToString(), "", new Dictionary<string, EntityProperty>{
-                { "Created", new EntityProperty(DateTime.UtcNow) },
-                { "Content", new EntityProperty(content) },
-            });
-            unreadMessagesTable.Execute(TableOperation.Insert(entity));
+            var entity = new Entity(author.ToString(), Guid.NewGuid().ToString());
+            entity.Set("Created", DateTime.UtcNow);
+            entity.Set("Content", content);
+            new AzureTable(unreadMessagesTable).Insert(entity);
             log.LogInformation("Successfully inserted message.");
 
             if (HttpHelper.HandlePageRedirect(req)) {
