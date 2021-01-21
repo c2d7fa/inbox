@@ -26,5 +26,38 @@ namespace Inbox.TableStorage {
             );
             return cloudTable.ExecuteQuery(query).Any();
         }
+
+        public IEnumerable<IEntity> AllEntities {
+            get {
+                if (cloudTable.ExecuteQuery(new TableQuery()) is IEnumerable<DynamicTableEntity> entities) {
+                    return entities.Select(entity => new AzureDynamicEntity(entity));
+                } else {
+                    return new List<IEntity>();
+                }
+            }
+        }
+
+        private class AzureDynamicEntity : IEntity {
+            public AzureDynamicEntity(DynamicTableEntity entity) {
+                Partition = entity.PartitionKey;
+                Row = entity.RowKey;
+                var properties = new Dictionary<string, dynamic>();
+                foreach (var (key, value) in entity.Properties) {
+                    properties[key] = value.PropertyAsObject;
+                }
+
+                Properties = properties;
+            }
+
+            public string Partition { get; }
+
+            public string Row { get; }
+
+            public object? Property(string key) {
+                return Properties[key];
+            }
+
+            public IReadOnlyDictionary<string, dynamic> Properties { get; }
+        }
     }
 }

@@ -31,15 +31,17 @@ namespace Inbox
 
             var messages = new List<Message>();
 
-            var entities = unreadMessagesTable.ExecuteQuery(new TableQuery());
+            var entities = new AzureTable(unreadMessagesTable).AllEntities;
             foreach (var entity in entities) {
-                var uuid = Guid.Parse(entity.RowKey);
-                var created_ = entity.Properties["Created"].DateTime;
-                var author = IPAddress.Parse(entity.PartitionKey);
-                var content = entity.Properties["Content"].StringValue;
+                var uuid = Guid.Parse(entity.Row);
+                var author = IPAddress.Parse(entity.Partition);
+                var created = entity.Property("Created");//.DateTime;
+                var content = entity.Property("Content");//.StringValue;
 
-                if (created_ is DateTime created) {
-                    messages.Add(new Message(uuid, created, author, content));
+                if (created is DateTime createdDateTime && content is string contentString) {
+                    messages.Add(new Message(uuid, createdDateTime, author, contentString));
+                } else {
+                    log.LogWarning("Couldn't read entity with UUID " + entity.Row);
                 }
             }
 

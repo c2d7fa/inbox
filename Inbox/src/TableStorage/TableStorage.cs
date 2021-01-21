@@ -17,16 +17,22 @@ namespace Inbox.TableStorage {
         public void Set(string key, dynamic value) {
             properties[key] = value;
         }
+
+        public object? Property(string key) {
+            return properties[key];
+        }
     }
 
     public interface IEntity {
         string Partition { get; }
         string Row { get; }
+        object? Property(string key);
         IReadOnlyDictionary<string, dynamic> Properties { get; }
     }
 
     public interface ITable {
         void Insert(IEntity entity);
         bool HasRow(string key);
+        IEnumerable<IEntity> AllEntities { get; }
     }
 }
