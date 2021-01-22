@@ -30,5 +30,12 @@ namespace Inbox {
                 }
             })
             .OrderBy(message => message.Created);
+
+        public void Insert(IPAddress author, string content) {
+            var entity = new Entity(author.ToString(), Guid.NewGuid().ToString());
+            entity.Set("Created", DateTime.UtcNow);
+            entity.Set("Content", content);
+            table.Insert(entity);
+        }
     }
 }

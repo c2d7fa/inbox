@@ -24,6 +24,8 @@ namespace Inbox
             [Table("UnreadMessages")] CloudTable unreadMessagesTable,
             ILogger log)
         {
+            var unreadMessages = new UnreadMessages(new AzureTable(unreadMessagesTable));
+
             log.LogInformation("Reading new message content...");
             var content = HttpHelper.GetForm(req, "content");
             if (content == null) {
@@ -36,10 +38,7 @@ namespace Inbox
             log.LogInformation($"It looks like this message came from '{author}'.");
 
             log.LogInformation("Inserting message into database...");
-            var entity = new Entity(author.ToString(), Guid.NewGuid().ToString());
-            entity.Set("Created", DateTime.UtcNow);
-            entity.Set("Content", content);
-            new AzureTable(unreadMessagesTable).Insert(entity);
+            unreadMessages.Insert(author, content);
             log.LogInformation("Successfully inserted message.");
 
             if (HttpHelper.HandlePageRedirect(req)) {
