@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 using System.Net;
+using Inbox.TableStorage;
 using Microsoft.Azure.Cosmos.Table;
 
 namespace Inbox
@@ -21,28 +22,15 @@ namespace Inbox
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             [Table("UnreadMessages")] CloudTable unreadMessagesTable,
             [Table("Authentication")] CloudTable authenticationTable,
-            ILogger log)
-        {
-            if (!Authentication.IsAuthenticated(req, authenticationTable)) {
+            ILogger log) {
+            var unreadMessages = new UnreadMessages(new AzureTable(unreadMessagesTable));
+
+            if (!Authentication.IsAuthenticated(req, new AzureTable(authenticationTable))) {
                 log.LogInformation("User was not authenticated when getting all tables");
                 return new UnauthorizedResult();
             }
 
-            var messages = new List<Message>();
-
-            var entities = unreadMessagesTable.ExecuteQuery(new TableQuery());
-            foreach (var entity in entities) {
-                var uuid = Guid.Parse(entity.RowKey);
-                var created_ = entity.Properties["Created"].DateTime;
-                var author = IPAddress.Parse(entity.PartitionKey);
-                var content = entity.Properties["Content"].StringValue;
-
-                if (created_ is DateTime created) {
-                    messages.Add(new Message(uuid, created, author, content));
-                }
-            }
-
-            return new JsonResult(messages, new JsonSerializerSettings().WithIPAddress());
+            return new JsonResult(unreadMessages.All, new JsonSerializerSettings().WithIPAddress());
         }
     }
 }

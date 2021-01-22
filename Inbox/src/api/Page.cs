@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.IO;
+using Inbox.TableStorage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -25,6 +26,8 @@ namespace Inbox
             ExecutionContext executionContext,
             ILogger log)
         {
+            var unreadMessages = new UnreadMessages(new AzureTable(unreadMessagesTable));
+
             if (!req.Query.ContainsKey("path")) {
               log.LogWarning("Got invalid request from client: No path given for page");
               return new BadRequestResult();
@@ -53,13 +56,13 @@ namespace Inbox
                 if (variable.Name == "messages") {
                     if (!memoized.ContainsKey("messages")) {
                         log.LogInformation("Getting messages because they haven't been cached yet");
-                        memoized.Add("messages", GetMessages(unreadMessagesTable, log));
+                        memoized.Add("messages", unreadMessages.All);
                     }
                     value = memoized["messages"];
                     return true;
                 } else if (variable.Name == "authenticated") {
                     if (!memoized.ContainsKey("authenticated")) {
-                        memoized.Add("authenticated", Authentication.IsAuthenticated(req, authenticationTable));
+                        memoized.Add("authenticated", Authentication.IsAuthenticated(req, new AzureTable(authenticationTable)));
                     }
                     value = memoized["authenticated"];
                     return true;
@@ -73,26 +76,6 @@ namespace Inbox
             response.ContentType = "text/html";
             response.Content = Template.Parse(File.ReadAllText(file)).Render(context);
             return response;
-        }
-
-        private static List<Message> GetMessages(CloudTable unreadMessagesTable, ILogger log) {
-            var messages = new List<Message>();
-
-            var entities = unreadMessagesTable.ExecuteQuery(new TableQuery());
-            foreach (var entity in entities) {
-                var uuid = Guid.Parse(entity.RowKey);
-                var created_ = entity.Properties["Created"].DateTime;
-                var author = IPAddress.Parse(entity.PartitionKey);
-                var content = entity.Properties["Content"].StringValue;
-
-                if (created_ is DateTime created) {
-                    messages.Add(new Message(uuid, created, author, content));
-                }
-            }
-
-            messages.Sort((a, b) => a.Created.CompareTo(b.Created));
-
-            return messages;
         }
     }
 }

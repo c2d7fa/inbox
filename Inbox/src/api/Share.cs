@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Inbox.TableStorage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -18,6 +19,8 @@ namespace Inbox
       [Table("UnreadMessages")] CloudTable unreadMessagesTable,
       ILogger log)
     {
+      var unreadMessages = new UnreadMessages(new AzureTable(unreadMessagesTable));
+
       string message = null;
 
       string url = HttpHelper.GetForm(req, "url");
@@ -46,11 +49,7 @@ namespace Inbox
       log.LogInformation($"It looks like this message came from '{author}'.");
 
       log.LogInformation("Inserting message into database...");
-      var entity = new DynamicTableEntity(author.ToString(), Guid.NewGuid().ToString(), "", new Dictionary<string, EntityProperty>{
-          { "Created", new EntityProperty(DateTime.UtcNow) },
-          { "Content", new EntityProperty(message) },
-      });
-      unreadMessagesTable.Execute(TableOperation.Insert(entity));
+      unreadMessages.Insert(author, message);
 
       var response = new ContentResult();
       response.ContentType = "text/plain";

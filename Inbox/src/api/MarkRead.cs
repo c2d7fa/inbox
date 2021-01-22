@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Inbox.TableStorage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -19,7 +21,9 @@ namespace Inbox
             [Table("Authentication")] CloudTable authenticationTable,
             ILogger log)
         {
-            if (!Authentication.IsAuthenticated(req, authenticationTable)) {
+            var messages = new Messages(new AzureTable(unreadMessagesTable), new AzureTable(readMessagesTable));
+
+            if (!Authentication.IsAuthenticated(req, new AzureTable(authenticationTable))) {
                 log.LogInformation("User was not authenticated when getting all tables");
                 return new UnauthorizedResult();
             }
@@ -32,32 +36,13 @@ namespace Inbox
             string uuid = req.Query["message"];
             log.LogInformation($"Marking message '{uuid}' as read...");
 
-            if (GetEntityByRowKey(unreadMessagesTable, uuid) is DynamicTableEntity entity) {
-              log.LogInformation("Message found. Moving to ReadMessages table...");
-              readMessagesTable.Execute(TableOperation.Insert(entity));
-              log.LogInformation("Deleting message from UnreadMessages...");
-              unreadMessagesTable.Execute(TableOperation.Delete(GetEntityByRowKey(unreadMessagesTable, uuid)));
-            } else {
-              log.LogWarning("Message not found. Ignoring.");
-            }
+            messages.MarkRead(Guid.Parse(uuid));
 
             if (HttpHelper.HandlePageRedirect(req)) {
               return new EmptyResult();
             }
 
             return new OkResult();
-        }
-
-        private static DynamicTableEntity GetEntityByRowKey(CloudTable table, string rowKey) {
-          var matchingEntities = new List<DynamicTableEntity>(table.ExecuteQuery(new TableQuery().Where(
-            TableQuery.GenerateFilterCondition("RowKey", "eq", rowKey)
-          )));
-
-          if (matchingEntities.Count == 1) {
-            return matchingEntities[0];
-          } else {
-            return null;
-          }
         }
     }
 }
