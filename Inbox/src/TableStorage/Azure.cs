@@ -20,6 +20,28 @@ namespace Inbox.TableStorage {
             cloudTable.Execute(TableOperation.Insert(azureEntity));
         }
 
+        private DynamicTableEntity? GetAzureEntity(string key) {
+            var matchingEntities = new List<DynamicTableEntity>(
+                cloudTable.ExecuteQuery(
+                    new TableQuery().Where(
+                        TableQuery.GenerateFilterCondition("RowKey", "eq", key)
+                    )
+                )
+            );
+
+            return matchingEntities.Count != 1 ? null : matchingEntities[0];
+        }
+
+        public IEntity? Get(string key) {
+            if (!(GetAzureEntity(key) is { } entity)) return null;
+            return new AzureDynamicEntity(entity);
+        }
+
+        public void Delete(string key) {
+            if (!(GetAzureEntity(key) is { } entity)) return;
+            cloudTable.Execute(TableOperation.Delete(entity));
+        }
+
         public bool HasRow(string key) {
             var query = new TableQuery().Where(
                 TableQuery.GenerateFilterCondition("RowKey", "eq", key)

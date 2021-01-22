@@ -38,4 +38,21 @@ namespace Inbox {
             table.Insert(entity);
         }
     }
+
+    public class Messages {
+        private readonly ITable unread;
+        private readonly ITable read;
+
+        public Messages(ITable unread, ITable read) {
+            this.unread = unread;
+            this.read = read;
+        }
+
+        public void MarkRead(Guid uuid) {
+            var key = uuid.ToString();
+            if (!(unread.Get(key) is { } entity)) return;
+            read.Insert(entity);
+            unread.Delete(key);
+        }
+    }
 }

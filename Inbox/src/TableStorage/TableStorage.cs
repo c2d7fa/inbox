@@ -32,6 +32,8 @@ namespace Inbox.TableStorage {
 
     public interface ITable {
         void Insert(IEntity entity);
+        IEntity? Get(string key);
+        void Delete(string key);
         bool HasRow(string key);
         IEnumerable<IEntity> AllEntities { get; }
     }
