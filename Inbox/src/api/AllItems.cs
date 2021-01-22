@@ -22,30 +22,15 @@ namespace Inbox
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             [Table("UnreadMessages")] CloudTable unreadMessagesTable,
             [Table("Authentication")] CloudTable authenticationTable,
-            ILogger log)
-        {
+            ILogger log) {
+            var unreadMessages = new UnreadMessages(new AzureTable(unreadMessagesTable));
+
             if (!Authentication.IsAuthenticated(req, new AzureTable(authenticationTable))) {
                 log.LogInformation("User was not authenticated when getting all tables");
                 return new UnauthorizedResult();
             }
 
-            var messages = new List<Message>();
-
-            var entities = new AzureTable(unreadMessagesTable).AllEntities;
-            foreach (var entity in entities) {
-                var uuid = Guid.Parse(entity.Row);
-                var author = IPAddress.Parse(entity.Partition);
-                var created = entity.Property("Created");//.DateTime;
-                var content = entity.Property("Content");//.StringValue;
-
-                if (created is DateTime createdDateTime && content is string contentString) {
-                    messages.Add(new Message(uuid, createdDateTime, author, contentString));
-                } else {
-                    log.LogWarning("Couldn't read entity with UUID " + entity.Row);
-                }
-            }
-
-            return new JsonResult(messages, new JsonSerializerSettings().WithIPAddress());
+            return new JsonResult(unreadMessages.All, new JsonSerializerSettings().WithIPAddress());
         }
     }
 }
