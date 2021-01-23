@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Azure.Cosmos.Table;
+using Inbox.Core.TableStorage;
 
-namespace Inbox.TableStorage {
+namespace Inbox {
     public class AzureTable : ITable {
         private readonly CloudTable cloudTable;
 

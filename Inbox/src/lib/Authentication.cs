@@ -1,5 +1,5 @@
-using Inbox.TableStorage;
 using Microsoft.AspNetCore.Http;
+using Inbox.Core.TableStorage;
 
 namespace Inbox {
   public static class Authentication {

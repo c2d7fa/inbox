@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Inbox.TableStorage;
+using Inbox.Core.TableStorage;
 
-namespace Inbox {
+namespace Inbox.Core {
     public class UnreadMessages {
         private readonly ITable table;
 

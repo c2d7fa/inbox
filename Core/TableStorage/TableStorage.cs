@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Inbox.TableStorage {
+namespace Inbox.Core.TableStorage {
     public class Entity : IEntity {
         public string Partition { get; }
         public string Row { get; }

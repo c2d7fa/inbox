@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using Inbox.TableStorage;
+using Inbox.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
