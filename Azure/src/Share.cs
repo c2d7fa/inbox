@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using Microsoft.Azure.Cosmos.Table;
 
-namespace Inbox
+namespace Inbox.Azure
 {
   public static class Share
   {

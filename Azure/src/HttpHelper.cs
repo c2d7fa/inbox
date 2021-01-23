@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace Inbox {
+namespace Inbox.Azure {
   public static class HttpHelper {
     public static bool HandlePageRedirect(HttpRequest req) {
       if (GetForm(req, "page") != null) {

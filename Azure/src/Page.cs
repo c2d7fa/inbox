@@ -12,7 +12,7 @@ using Scriban;
 using Scriban.Parsing;
 using Scriban.Syntax;
 
-namespace Inbox
+namespace Inbox.Azure
 {
     public static class Page
     {
