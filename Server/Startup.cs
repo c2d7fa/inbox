@@ -14,6 +14,7 @@ namespace Server {
 
         public void ConfigureServices(IServiceCollection services) {
             services.AddRazorPages();
+            services.AddControllers();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
@@ -26,7 +27,10 @@ namespace Server {
 
             app.UseStaticFiles();
             app.UseRouting();
-            app.UseEndpoints(endpoints => { endpoints.MapRazorPages(); });
+            app.UseEndpoints(endpoints => {
+                endpoints.MapRazorPages();
+                endpoints.MapControllers();
+            });
         }
     }
 }
