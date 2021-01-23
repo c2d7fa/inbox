@@ -29,11 +29,7 @@ namespace Inbox.Azure {
 
             unreadMessages.Insert(author, content);
 
-            if (HttpHelper.HandlePageRedirect(req)) {
-                return new EmptyResult();
-            }
-
-            return new OkResult();
+            return HttpHelper.FinalResponse(req);
         }
     }
 }

@@ -37,11 +37,7 @@ namespace Inbox.Azure
 
             messages.MarkRead(Guid.Parse(uuid));
 
-            if (HttpHelper.HandlePageRedirect(req)) {
-              return new EmptyResult();
-            }
-
-            return new OkResult();
+            return HttpHelper.FinalResponse(req);
         }
     }
 }
