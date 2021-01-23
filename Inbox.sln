@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Azure", "Azure\Azure.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{542E1915-8E86-43A6-8B5B-EDD3ED73E42D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{146AF193-F67E-4959-9FFB-C40A25066FB9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +46,17 @@ Global
 		{542E1915-8E86-43A6-8B5B-EDD3ED73E42D}.Release|x64.Build.0 = Release|Any CPU
 		{542E1915-8E86-43A6-8B5B-EDD3ED73E42D}.Release|x86.ActiveCfg = Release|Any CPU
 		{542E1915-8E86-43A6-8B5B-EDD3ED73E42D}.Release|x86.Build.0 = Release|Any CPU
+		{146AF193-F67E-4959-9FFB-C40A25066FB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{146AF193-F67E-4959-9FFB-C40A25066FB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{146AF193-F67E-4959-9FFB-C40A25066FB9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{146AF193-F67E-4959-9FFB-C40A25066FB9}.Debug|x64.Build.0 = Debug|Any CPU
+		{146AF193-F67E-4959-9FFB-C40A25066FB9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{146AF193-F67E-4959-9FFB-C40A25066FB9}.Debug|x86.Build.0 = Debug|Any CPU
+		{146AF193-F67E-4959-9FFB-C40A25066FB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{146AF193-F67E-4959-9FFB-C40A25066FB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{146AF193-F67E-4959-9FFB-C40A25066FB9}.Release|x64.ActiveCfg = Release|Any CPU
+		{146AF193-F67E-4959-9FFB-C40A25066FB9}.Release|x64.Build.0 = Release|Any CPU
+		{146AF193-F67E-4959-9FFB-C40A25066FB9}.Release|x86.ActiveCfg = Release|Any CPU
+		{146AF193-F67E-4959-9FFB-C40A25066FB9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
