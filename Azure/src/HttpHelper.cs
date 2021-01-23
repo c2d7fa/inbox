@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inbox.Azure {
-  public static class HttpHelper {
+  internal static class HttpHelper {
     public static IActionResult FinalResponse(HttpRequest req) {
       if (!(GetForm(req, "page") is { } page))
         return new OkResult();
