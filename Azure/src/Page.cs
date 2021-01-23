@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Net;
 using System.IO;
-using Inbox.TableStorage;
+using Inbox.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -14,7 +12,7 @@ using Scriban;
 using Scriban.Parsing;
 using Scriban.Syntax;
 
-namespace Inbox
+namespace Inbox.Azure
 {
     public static class Page
     {

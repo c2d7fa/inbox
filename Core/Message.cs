@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using System.Web;
 
-namespace Inbox {
+namespace Inbox.Core {
     public class Message {
         public Guid Uuid { get; private set; }
         public DateTime Created { get; private set; }

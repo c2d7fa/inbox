@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using Inbox.TableStorage;
+using Inbox.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -9,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using Microsoft.Azure.Cosmos.Table;
 
-namespace Inbox
+namespace Inbox.Azure
 {
   public static class Share
   {
