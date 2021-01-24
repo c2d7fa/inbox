@@ -1,0 +1,68 @@
+body {
+  font: 1.2em sans-serif;
+}
+
+textarea {
+  width: 100%;
+  height: 3em;
+}
+
+h1 {
+  font-size: 1.2em;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+thead {
+  font-weight: bold;
+}
+
+tr:hover {
+  background-color: #f6f6f6;
+}
+
+td {
+  padding: 0.25rem 1rem;
+  border: 1px solid #eee;
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+td.message {
+  white-space: normal;
+}
+
+td form {
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  thead {
+    display: none;
+  }
+
+  tbody {
+    display: flex;
+    flex-direction: column;
+  }
+
+  tr {
+    display: flex;
+    border: 1px solid #eee;
+    flex-direction: column;
+    margin-bottom: 1.5em;
+  }
+
+  td.message {
+    margin-bottom: 1em;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  td {
+    padding: 0;
+    border: 0;
+  }
+}

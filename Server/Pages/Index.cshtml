@@ -1,0 +1,73 @@
+﻿@page
+@namespace Inbox.Server.Pages
+@model IndexModel
+
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    @if (Model.IsAuthenticated && Model.UnreadMessages.All.Any()) {
+        <title>Inbox &ndash; @Model.UnreadMessages.All.Count() Unread</title>
+    } else {
+        <title>Inbox</title>
+    }
+    <link rel="icon" href="https://unpkg.com/mono-icons@1.0.0/svg/inbox.svg" type="image/svg+xml"/>
+    <link rel="manifest" href="/manifest.json"/>
+    <link rel="stylesheet" href="/style.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/service-worker.js");
+        }
+    </script>
+</head>
+<body>
+
+<h1>New Message</h1>
+<form action="/api/AddItem" method="post">
+    <input type="hidden" name="page" value=""/>
+    <textarea name="content"></textarea>
+    <div>
+        <input type="submit" value="Submit"/>
+    </div>
+</form>
+
+@if (Model.IsAuthenticated) {
+    @if (Model.UnreadMessages.All.Any()) {
+        <h1>Inbox</h1>
+        <table>
+            <thead>
+            <tr>
+                <td>Message</td>
+                <td>Date</td>
+                <td>Time</td>
+                <td>IP Address</td>
+                <td></td>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var message in Model.UnreadMessages.All) {
+                <tr>
+                    <td class="message">@Html.Raw(message.HtmlContent)</td>
+                    <td>@message.Created.ToString("ddd, dd MMM, yyyy")</td>
+                    <td>@message.Created.ToString("HH:mm:ss")</td>
+                    <td>
+                        <code>@message.Author.ToString()</code>
+                    </td>
+                    <td>
+                        <form action="/api/MarkRead?message=@message.Uuid.ToString()" method="post">
+                            <input type="hidden" name="page" value=""/>
+                            <input type="submit" value="Read"/>
+                        </form>
+                    </td>
+                </tr>
+            }
+
+            </tbody>
+        </table>
+    } else {
+        <div style="font-style: italic;">No unread messages</div>
+    }
+}
+
+</body>
+</html>
