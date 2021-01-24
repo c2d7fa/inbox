@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Server {
+namespace Inbox.Server {
     public class Program {
         public static void Main(string[] args) {
             CreateHostBuilder(args).Build().Run();

@@ -4,7 +4,7 @@ using System.Linq;
 using Inbox.Core.TableStorage;
 using Microsoft.Azure.Cosmos.Table;
 
-namespace Server {
+namespace Inbox.Server {
     internal class AzureTable : ITable {
         private readonly CloudTable cloudTable;
 

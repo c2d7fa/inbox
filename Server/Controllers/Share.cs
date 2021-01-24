@@ -3,7 +3,7 @@ using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging.Abstractions;
 using Api = Inbox.Core.Api;
 
-namespace Server.Controllers {
+namespace Inbox.Server.Controllers {
     [ApiController]
     [Route("/api/Share")]
     public class Share : ControllerBase {
