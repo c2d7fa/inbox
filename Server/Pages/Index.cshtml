@@ -2,20 +2,21 @@
 @namespace Server.Pages
 @model IndexModel
 
-<html>
+<html lang="en">
 <head>
-    <title>boop</title>
+    <title>Inbox</title>
 </head>
-
-@if (Model.IsAuthenticated) {
-    <strong style="color:green;">Authenticated</strong>
-} else {
-    <strong style="color: red;">Not Authenticated</strong>
-}
-
 <body>
 
-<p>Hello world! The time is <code>@DateTime.Now</code>.</p>
+@if (Model.IsAuthenticated) {
+    <ul>
+        @foreach (var message in Model.UnreadMessages.All) {
+            <li>@message.Content</li>
+        }
+    </ul>
+} else {
+    <em>You are not logged in.</em>
+}
 
 </body>
 </html>
