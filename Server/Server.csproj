@@ -55,7 +55,7 @@
     <Content Update="wwwroot\icon512.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Update="wwwroot\manifest.webmanifest">
+    <Content Update="wwwroot\manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Update="wwwroot\service-worker.js">
