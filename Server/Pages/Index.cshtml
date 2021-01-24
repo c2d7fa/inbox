@@ -1,8 +1,21 @@
 ﻿@page
 @namespace Server.Pages
 @model IndexModel
-@{
-    ViewData["Title"] = "Home page";
+
+<html>
+<head>
+    <title>boop</title>
+</head>
+
+@if (Model.IsAuthenticated) {
+    <strong style="color:green;">Authenticated</strong>
+} else {
+    <strong style="color: red;">Not Authenticated</strong>
 }
 
+<body>
+
 <p>Hello world! The time is <code>@DateTime.Now</code>.</p>
+
+</body>
+</html>
