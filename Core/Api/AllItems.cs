@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System.Linq;
 using Inbox.Core.TableStorage;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Inbox.Core.Api {
     public class AllItems {
@@ -11,7 +11,7 @@ namespace Inbox.Core.Api {
         private readonly ITable authenticationTable;
 
         public AllItems(ITable unreadMessagesTable, ITable authenticationTable, ILogger log) {
-            this.unreadMessages = new UnreadMessages(unreadMessagesTable);
+            unreadMessages = new UnreadMessages(unreadMessagesTable);
             this.authenticationTable = authenticationTable;
             this.log = log;
         }
@@ -22,7 +22,13 @@ namespace Inbox.Core.Api {
                 return new ForbidResult();
             }
 
-            return new JsonResult(unreadMessages.All, new JsonSerializerSettings().WithIpAddress());
+            return new JsonResult(unreadMessages.All.Select(message => new {
+                message.Uuid,
+                message.Created,
+                message.Content,
+                message.HtmlContent,
+                Author = message.Author.ToString(),
+            }));
         }
     }
 }
