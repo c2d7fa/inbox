@@ -1,4 +1,5 @@
 using System;
+using Inbox.Server.TableStorage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.Cosmos.Table;
@@ -21,7 +22,14 @@ namespace Inbox.Server {
             var connectionString = configuration["ConnectionString"];
             Console.WriteLine("Using connection string: " + connectionString);
             var account = CloudStorageAccount.Parse(connectionString);
-            services.AddSingleton(account.CreateCloudTableClient());
+            var client = account.CreateCloudTableClient();
+            services.AddSingleton(client);
+
+            IStorage storage = new Messages(
+                new AzureTable(client.GetTableReference("UnreadMessages")),
+                new AzureTable(client.GetTableReference("ReadMessages"))
+            );
+            services.AddSingleton(storage);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

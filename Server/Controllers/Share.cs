@@ -1,6 +1,4 @@
-using Inbox.Server.TableStorage;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -9,9 +7,8 @@ namespace Inbox.Server.Controllers {
     [Route("/api/Share")]
     public class Share : ControllerBase {
         [HttpPost]
-        public IActionResult Get([FromServices] CloudTableClient client) {
+        public IActionResult Get([FromServices] IStorage storage) {
             var log = NullLogger.Instance;
-            var unread = new UnreadMessages(new AzureTable(client.GetTableReference("UnreadMessages")));
 
             string message =
                 HttpHelper.GetForm(Request, "url") ??
@@ -24,7 +21,7 @@ namespace Inbox.Server.Controllers {
                 return new StatusCodeResult(500);
             }
 
-            unread.Insert(author, message);
+            storage.Create(author, message);
 
             return new ContentResult {
                 ContentType = "text/plain",
