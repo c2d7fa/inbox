@@ -1,5 +1,4 @@
 using System.Linq;
-using Inbox.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;

@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-
-using Inbox.Core.TableStorage;
 using Microsoft.Azure.Cosmos.Table;
+using Inbox.Server.TableStorage;
 
 namespace Inbox.Server {
     internal class AzureTable : ITable {
