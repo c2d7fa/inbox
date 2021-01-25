@@ -5,8 +5,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
-    @if (Model.IsAuthenticated && Model.UnreadMessages.All.Any()) {
-        <title>Inbox &ndash; @Model.UnreadMessages.All.Count() Unread</title>
+    @if (Model.IsAuthenticated && Model.Messages.Unread.Any()) {
+        <title>Inbox &ndash; @Model.Messages.Unread.Count() Unread</title>
     } else {
         <title>Inbox</title>
     }
@@ -32,7 +32,7 @@
 </form>
 
 @if (Model.IsAuthenticated) {
-    @if (Model.UnreadMessages.All.Any()) {
+    @if (Model.Messages.Unread.Any()) {
         <h1>Inbox</h1>
         <table>
             <thead>
@@ -45,7 +45,7 @@
             </tr>
             </thead>
             <tbody>
-            @foreach (var message in Model.UnreadMessages.All) {
+            @foreach (var message in Model.Messages.Unread) {
                 <tr>
                     <td class="message">@Html.Raw(message.HtmlContent)</td>
                     <td>@message.Created.ToString("ddd, dd MMM, yyyy")</td>

@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Inbox.Server.TableStorage;
 
-namespace Inbox.Server {
+namespace Inbox.Server.TableStorage {
     public class UnreadMessages {
         private readonly ITable table;
 
@@ -39,13 +38,16 @@ namespace Inbox.Server {
         }
     }
 
-    public class Messages {
+    public class Messages : IStorage {
         private readonly ITable unread;
         private readonly ITable read;
+
+        private readonly UnreadMessages unreadMessages;
 
         public Messages(ITable unread, ITable read) {
             this.unread = unread;
             this.read = read;
+            this.unreadMessages = new UnreadMessages(unread);
         }
 
         public void MarkRead(Guid uuid) {
@@ -54,5 +56,9 @@ namespace Inbox.Server {
             read.Insert(entity);
             unread.Delete(key);
         }
+
+        public IEnumerable<Message> Unread => unreadMessages.All;
+        public void Create(IPAddress author, string content) => unreadMessages.Insert(author, content);
+        public void Read(Guid uuid) => MarkRead(uuid);
     }
 }

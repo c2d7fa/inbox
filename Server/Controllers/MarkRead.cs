@@ -10,15 +10,10 @@ namespace Inbox.Server.Controllers {
     [Route("/api/MarkRead")]
     public class MarkRead : ControllerBase {
         [HttpPost]
-        public IActionResult Get([FromServices] CloudTableClient client) {
+        public IActionResult Get([FromServices] IAuthentication authentication, [FromServices] IStorage storage) {
             var log = NullLogger.Instance;
-            var authentication = new AzureTable(client.GetTableReference("Authentication"));
-            var messages = new Messages(
-                new AzureTable(client.GetTableReference("UnreadMessages")),
-                new AzureTable(client.GetTableReference("ReadMessages"))
-            );
 
-            if (!Authentication.IsAuthenticated(Request, authentication)) {
+            if (!authentication.IsRequestAuthenticated(Request)) {
                 log.LogInformation("User was not authenticated when getting all tables");
                 return new UnauthorizedResult();
             }
@@ -29,7 +24,7 @@ namespace Inbox.Server.Controllers {
             }
 
             string uuid = Request.Query["message"];
-            messages.MarkRead(Guid.Parse(uuid));
+            storage.Read(Guid.Parse(uuid));
 
             return HttpHelper.FinalResponse(Request);
         }

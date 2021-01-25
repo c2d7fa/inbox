@@ -10,17 +10,15 @@ namespace Inbox.Server.Controllers {
     [Route("/api/AllItems")]
     public class AllItems : ControllerBase {
         [HttpGet]
-        public IActionResult Get([FromServices] CloudTableClient client) {
+        public IActionResult Get([FromServices] IAuthentication authentication, [FromServices] IStorage storage) {
             var log = NullLogger.Instance;
-            var authentication = new AzureTable(client.GetTableReference("Authentication"));
-            var unread = new UnreadMessages(new AzureTable(client.GetTableReference("UnreadMessages")));
 
-            if (!Authentication.IsAuthenticated(Request, authentication)) {
+            if (!authentication.IsRequestAuthenticated(Request)) {
                 log.LogInformation("User was not authenticated when getting all messages.");
                 return new ForbidResult();
             }
 
-            return new JsonResult(unread.All.Select(message => new {
+            return new JsonResult(storage.Unread.Select(message => new {
                 message.Uuid,
                 message.Created,
                 message.Content,
