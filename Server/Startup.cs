@@ -30,6 +30,9 @@ namespace Inbox.Server {
                 new AzureTable(client.GetTableReference("ReadMessages"))
             );
             services.AddSingleton(storage);
+
+            IAuthentication authentication = new TableAuthentication(new AzureTable(client.GetTableReference("Authentication")));
+            services.AddSingleton(authentication);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

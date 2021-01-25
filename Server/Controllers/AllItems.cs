@@ -10,11 +10,10 @@ namespace Inbox.Server.Controllers {
     [Route("/api/AllItems")]
     public class AllItems : ControllerBase {
         [HttpGet]
-        public IActionResult Get([FromServices] CloudTableClient client, [FromServices] IStorage storage) {
+        public IActionResult Get([FromServices] IAuthentication authentication, [FromServices] IStorage storage) {
             var log = NullLogger.Instance;
-            var authentication = new AzureTable(client.GetTableReference("Authentication"));
 
-            if (!Authentication.IsAuthenticated(Request, authentication)) {
+            if (!authentication.IsRequestAuthenticated(Request)) {
                 log.LogInformation("User was not authenticated when getting all messages.");
                 return new ForbidResult();
             }

@@ -1,26 +1,19 @@
-using Inbox.Server.TableStorage;
 using Microsoft.AspNetCore.Http;
 
 namespace Inbox.Server {
-    public static class Authentication {
-        private static bool IsValidToken(string token, ITable authenticationTable) {
-            return authenticationTable.HasRow(token);
-        }
+    public static class AuthenticationExtensions {
+        public static bool IsRequestAuthenticated(this IAuthentication authentication, HttpRequest request) {
+            return IsAuthenticatedByCookie() || IsAuthenticatedByQuery();
 
-        public static bool IsAuthenticated(HttpRequest request, ITable authenticationTable) {
-            return IsAuthenticatedByCookie(request, authenticationTable) ||
-                   IsAuthenticatedByQuery(request, authenticationTable);
-        }
+            bool IsAuthenticatedByCookie() {
+                var token = request.Cookies["InboxAuthenticationToken"];
+                return token != null && authentication.IsValidToken(token);
+            }
 
-        private static bool IsAuthenticatedByQuery(HttpRequest request, ITable authenticationTable) {
-            var token = request.Query["token"];
-            if (token.Count != 1) return false;
-            return IsValidToken(token[0], authenticationTable);
-        }
-
-        private static bool IsAuthenticatedByCookie(HttpRequest request, ITable authenticationTable) {
-            var token = request.Cookies["InboxAuthenticationToken"];
-            return token != null && IsValidToken(token, authenticationTable);
+            bool IsAuthenticatedByQuery() {
+                var token = request.Query["token"];
+                return token.Count == 1 && authentication.IsValidToken(token[0]);
+            }
         }
     }
 }

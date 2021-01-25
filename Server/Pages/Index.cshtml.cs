@@ -6,15 +6,15 @@ using Inbox.Server.TableStorage;
 namespace Inbox.Server.Pages {
     public class IndexModel : PageModel {
         private readonly ILogger<IndexModel> log;
-        private readonly ITable authentication;
+        private readonly IAuthentication authentication;
 
-        public bool IsAuthenticated => Authentication.IsAuthenticated(HttpContext.Request, authentication);
-        public UnreadMessages UnreadMessages { get; private set; }
+        public bool IsAuthenticated => authentication.IsRequestAuthenticated(HttpContext.Request);
+        public IStorage Messages { get; }
 
-        public IndexModel(ILogger<IndexModel> log, CloudTableClient client) {
-            this.authentication = new AzureTable(client.GetTableReference("Authentication"));
+        public IndexModel(ILogger<IndexModel> log, IAuthentication authentication, IStorage storage) {
             this.log = log;
-            UnreadMessages = new UnreadMessages(new AzureTable(client.GetTableReference("UnreadMessages")));
+            this.authentication = authentication;
+            Messages = storage;
         }
 
         public void OnGet() { }
