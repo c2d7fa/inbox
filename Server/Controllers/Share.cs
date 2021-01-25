@@ -1,3 +1,4 @@
+using Inbox.Server.TableStorage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
