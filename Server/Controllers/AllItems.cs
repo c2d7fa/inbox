@@ -1,8 +1,9 @@
-using Inbox.Core.TableStorage;
+using System.Linq;
+using Inbox.Server.TableStorage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Api = Inbox.Core.Api;
 
 namespace Inbox.Server.Controllers {
     [ApiController]
@@ -10,11 +11,22 @@ namespace Inbox.Server.Controllers {
     public class AllItems : ControllerBase {
         [HttpGet]
         public IActionResult Get([FromServices] CloudTableClient client) {
+            var log = NullLogger.Instance;
             var authentication = new AzureTable(client.GetTableReference("Authentication"));
-            var unread = new AzureTable(client.GetTableReference("UnreadMessages"));
+            var unread = new UnreadMessages(new AzureTable(client.GetTableReference("UnreadMessages")));
 
-            var api = new Api.AllItems(unread, authentication, NullLogger.Instance);
-            return api.Respond(Request);
+            if (!Authentication.IsAuthenticated(Request, authentication)) {
+                log.LogInformation("User was not authenticated when getting all messages.");
+                return new ForbidResult();
+            }
+
+            return new JsonResult(unread.All.Select(message => new {
+                message.Uuid,
+                message.Created,
+                message.Content,
+                message.HtmlContent,
+                Author = message.Author.ToString(),
+            }));
         }
     }
 }

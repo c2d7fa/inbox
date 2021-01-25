@@ -1,7 +1,7 @@
-using Inbox.Core.TableStorage;
+using Inbox.Server.TableStorage;
 using Microsoft.AspNetCore.Http;
 
-namespace Inbox.Core {
+namespace Inbox.Server {
     public static class Authentication {
         private static bool IsValidToken(string token, ITable authenticationTable) {
             return authenticationTable.HasRow(token);

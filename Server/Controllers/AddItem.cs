@@ -1,7 +1,8 @@
+using Inbox.Server.TableStorage;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Api = Inbox.Core.Api;
 
 namespace Inbox.Server.Controllers {
     [ApiController]
@@ -9,10 +10,22 @@ namespace Inbox.Server.Controllers {
     public class AddItem : ControllerBase {
         [HttpPost]
         public IActionResult Get([FromServices] CloudTableClient client) {
-            var unread = new AzureTable(client.GetTableReference("UnreadMessages"));
+            var log = NullLogger.Instance;
+            var unread = new UnreadMessages(new AzureTable(client.GetTableReference("UnreadMessages")));
 
-            var api = new Api.AddItem(unread, NullLogger.Instance);
-            return api.Respond(Request);
+            if (!(HttpHelper.GetForm(Request, "content") is { } content)) {
+                log.LogWarning("Could not get content from message.");
+                return new BadRequestResult();
+            }
+
+            if (!(HttpContext.Connection.RemoteIpAddress is { } author)) {
+                log.LogError("Unable to get IP address of request!");
+                return new StatusCodeResult(500);
+            }
+
+            unread.Insert(author, content);
+
+            return HttpHelper.FinalResponse(Request);
         }
     }
 }

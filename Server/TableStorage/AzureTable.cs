@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Azure.Cosmos.Table;
-using Inbox.Core.TableStorage;
 
-namespace Inbox.Azure {
-    public class AzureTable : ITable {
+namespace Inbox.Server.TableStorage {
+    internal class AzureTable : ITable {
         private readonly CloudTable cloudTable;
 
         public AzureTable(CloudTable cloudTable) {
@@ -52,11 +51,8 @@ namespace Inbox.Azure {
 
         public IEnumerable<IEntity> AllEntities {
             get {
-                if (cloudTable.ExecuteQuery(new TableQuery()) is IEnumerable<DynamicTableEntity> entities) {
-                    return entities.Select(entity => new AzureDynamicEntity(entity));
-                } else {
-                    return new List<IEntity>();
-                }
+                if (!(cloudTable.ExecuteQuery(new TableQuery()) is { } entities)) return new List<IEntity>();
+                return entities.Select(entity => new AzureDynamicEntity(entity));
             }
         }
 
