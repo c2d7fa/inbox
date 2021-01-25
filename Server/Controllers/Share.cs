@@ -1,7 +1,8 @@
+using Inbox.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Api = Inbox.Core.Api;
 
 namespace Inbox.Server.Controllers {
     [ApiController]
@@ -9,10 +10,26 @@ namespace Inbox.Server.Controllers {
     public class Share : ControllerBase {
         [HttpPost]
         public IActionResult Get([FromServices] CloudTableClient client) {
-            var unread = new AzureTable(client.GetTableReference("UnreadMessages"));
+            var log = NullLogger.Instance;
+            var unread = new UnreadMessages(new AzureTable(client.GetTableReference("UnreadMessages")));
 
-            var api = new Api.Share(unread, NullLogger.Instance);
-            return api.Respond(Request);
+            string message =
+                HttpHelper.GetForm(Request, "url") ??
+                HttpHelper.GetForm(Request, "text") ??
+                HttpHelper.GetForm(Request, "title") ??
+                "";
+
+            if (!(Request.HttpContext.Connection.RemoteIpAddress is { } author)) {
+                log.LogError("Unable to get IP address of request!");
+                return new StatusCodeResult(500);
+            }
+
+            unread.Insert(author, message);
+
+            return new ContentResult {
+                ContentType = "text/plain",
+                Content = "Received message: " + message,
+            };
         }
     }
 }

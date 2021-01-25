@@ -1,8 +1,9 @@
-using Inbox.Core.TableStorage;
+using System;
+using Inbox.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Api = Inbox.Core.Api;
 
 namespace Inbox.Server.Controllers {
     [ApiController]
@@ -10,12 +11,27 @@ namespace Inbox.Server.Controllers {
     public class MarkRead : ControllerBase {
         [HttpPost]
         public IActionResult Get([FromServices] CloudTableClient client) {
+            var log = NullLogger.Instance;
             var authentication = new AzureTable(client.GetTableReference("Authentication"));
-            var unread = new AzureTable(client.GetTableReference("UnreadMessages"));
-            var read = new AzureTable(client.GetTableReference("ReadMessages"));
+            var messages = new Messages(
+                new AzureTable(client.GetTableReference("UnreadMessages")),
+                new AzureTable(client.GetTableReference("ReadMessages"))
+            );
 
-            var api = new Api.MarkRead(unread, read, authentication, NullLogger.Instance);
-            return api.Respond(Request);
+            if (!Authentication.IsAuthenticated(Request, authentication)) {
+                log.LogInformation("User was not authenticated when getting all tables");
+                return new UnauthorizedResult();
+            }
+
+            if (!Request.Query.ContainsKey("message")) {
+                log.LogWarning("Got invalid request from client: No message UUID");
+                return new BadRequestResult();
+            }
+
+            string uuid = Request.Query["message"];
+            messages.MarkRead(Guid.Parse(uuid));
+
+            return HttpHelper.FinalResponse(Request);
         }
     }
 }
