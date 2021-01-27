@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -21,7 +22,7 @@ namespace Inbox.Server.Controllers {
                 return new StatusCodeResult(500);
             }
 
-            storage.Create(author, message);
+            storage.Create(Guid.NewGuid(), author, message);
 
             return new ContentResult {
                 ContentType = "text/plain",

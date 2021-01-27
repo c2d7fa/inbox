@@ -40,8 +40,9 @@ namespace Inbox.Server {
             }
         }
 
-        public void Create(IPAddress author, string content) {
-            using var command = new NpgsqlCommand("INSERT INTO message (id, created, author, content) VALUES (GEN_RANDOM_UUID(), NOW(), @author, @content)", Connection);
+        public void Create(Guid uuid, IPAddress author, string content) {
+            using var command = new NpgsqlCommand("INSERT INTO message (id, created, author, content) VALUES (@id, NOW(), @author, @content)", Connection);
+            command.Parameters.AddWithValue("id", uuid);
             command.Parameters.AddWithValue("author", author);
             command.Parameters.AddWithValue("content", content);
             command.ExecuteNonQuery();

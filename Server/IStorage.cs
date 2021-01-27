@@ -5,7 +5,7 @@ using System.Net;
 namespace Inbox.Server {
     public interface IStorage {
         public IEnumerable<Message> Unread { get; }
-        public void Create(IPAddress author, string content);
+        public void Create(Guid uuid, IPAddress author, string content);
         public void Read(Guid uuid);
     }
 
@@ -20,9 +20,9 @@ namespace Inbox.Server {
 
         public IEnumerable<Message> Unread => primary.Unread;
 
-        public void Create(IPAddress author, string content) {
-            primary.Create(author, content);
-            mirror.Create(author, content);
+        public void Create(Guid uuid, IPAddress author, string content) {
+            primary.Create(uuid, author, content);
+            mirror.Create(uuid, author, content);
         }
 
         public void Read(Guid uuid) {
