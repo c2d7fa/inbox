@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Inbox.Server {
     public class Startup {
-        private IConfiguration configuration;
+        private readonly IConfiguration configuration;
 
         public Startup(IConfiguration configuration) {
             this.configuration = configuration;
@@ -19,16 +19,24 @@ namespace Inbox.Server {
             services.AddRazorPages();
             services.AddControllers();
 
-            var connectionString = configuration["ConnectionString"];
-            Console.WriteLine("Using connection string: " + connectionString);
-            var account = CloudStorageAccount.Parse(connectionString);
-            var client = account.CreateCloudTableClient();
-            services.AddSingleton(client);
+            var azureConnectionString = configuration["AzureConnectionString"];
+            var postgresConnectionString = configuration["PostgresConnectionString"];
 
-            IStorage storage = new Messages(
+            if (string.IsNullOrEmpty(azureConnectionString) || string.IsNullOrEmpty(postgresConnectionString)) {
+                Console.Error.WriteLine("Must set both 'AzureConnectionString' and 'PostgresConnectionString'; see README.md for more information.");
+                Environment.Exit(1);
+            }
+
+            var account = CloudStorageAccount.Parse(azureConnectionString);
+            var client = account.CreateCloudTableClient();
+            var azureStorage = new Messages(
                 new AzureTable(client.GetTableReference("UnreadMessages")),
                 new AzureTable(client.GetTableReference("ReadMessages"))
             );
+
+            var postgresStorage = new PostgresStorage(postgresConnectionString);
+
+            IStorage storage = new MirroredStorage(azureStorage, postgresStorage);
             services.AddSingleton(storage);
 
             IAuthentication authentication = new TableAuthentication(new AzureTable(client.GetTableReference("Authentication")));
