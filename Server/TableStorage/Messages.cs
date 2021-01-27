@@ -30,8 +30,8 @@ namespace Inbox.Server.TableStorage {
             })
             .OrderBy(message => message.Created);
 
-        public void Insert(IPAddress author, string content) {
-            var entity = new Entity(author.ToString(), Guid.NewGuid().ToString());
+        public void Insert(Guid uuid, IPAddress author, string content) {
+            var entity = new Entity(author.ToString(), uuid.ToString());
             entity.Set("Created", DateTime.UtcNow);
             entity.Set("Content", content);
             table.Insert(entity);
@@ -50,7 +50,7 @@ namespace Inbox.Server.TableStorage {
             this.unreadMessages = new UnreadMessages(unread);
         }
 
-        public void MarkRead(Guid uuid) {
+        private void MarkRead(Guid uuid) {
             var key = uuid.ToString();
             if (!(unread.Get(key) is { } entity)) return;
             read.Insert(entity);
@@ -58,7 +58,7 @@ namespace Inbox.Server.TableStorage {
         }
 
         public IEnumerable<Message> Unread => unreadMessages.All;
-        public void Create(IPAddress author, string content) => unreadMessages.Insert(author, content);
+        public void Create(Guid uuid, IPAddress author, string content) => unreadMessages.Insert(uuid, author, content);
         public void Read(Guid uuid) => MarkRead(uuid);
     }
 }

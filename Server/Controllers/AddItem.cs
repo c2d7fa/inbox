@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -20,7 +21,7 @@ namespace Inbox.Server.Controllers {
                 return new StatusCodeResult(500);
             }
 
-            storage.Create(author, content);
+            storage.Create(Guid.NewGuid(), author, content);
 
             return HttpHelper.FinalResponse(Request);
         }
