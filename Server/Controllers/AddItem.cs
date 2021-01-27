@@ -16,7 +16,7 @@ namespace Inbox.Server.Controllers {
                 return new BadRequestResult();
             }
 
-            if (!(HttpContext.Connection.RemoteIpAddress is { } author)) {
+            if (!(HttpHelper.IpAddress(Request) is { } author)) {
                 log.LogError("Unable to get IP address of request!");
                 return new StatusCodeResult(500);
             }

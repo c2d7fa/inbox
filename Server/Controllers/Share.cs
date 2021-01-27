@@ -17,7 +17,7 @@ namespace Inbox.Server.Controllers {
                 HttpHelper.GetForm(Request, "title") ??
                 "";
 
-            if (!(Request.HttpContext.Connection.RemoteIpAddress is { } author)) {
+            if (!(HttpHelper.IpAddress(Request) is { } author)) {
                 log.LogError("Unable to get IP address of request!");
                 return new StatusCodeResult(500);
             }
