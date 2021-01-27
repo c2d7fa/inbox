@@ -1,8 +1,6 @@
 using System;
-using Inbox.Server.TableStorage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,20 +17,18 @@ namespace Inbox.Server {
             services.AddRazorPages();
             services.AddControllers();
 
-            var azureConnectionString = configuration["AzureConnectionString"];
+            var authenticationToken = configuration["AuthenticationToken"];
             var postgresConnectionString = configuration["PostgresConnectionString"];
 
-            if (string.IsNullOrEmpty(azureConnectionString) || string.IsNullOrEmpty(postgresConnectionString)) {
-                Console.Error.WriteLine("Must set both 'AzureConnectionString' and 'PostgresConnectionString'; see README.md for more information.");
+            if (string.IsNullOrEmpty(authenticationToken) || string.IsNullOrEmpty(postgresConnectionString)) {
+                Console.Error.WriteLine("Must set 'AuthenticationToken' and 'PostgresConnectionString'; see README.md for more information.");
                 Environment.Exit(1);
             }
 
             IStorage storage = new PostgresStorage(postgresConnectionString);
             services.AddSingleton(storage);
 
-            var account = CloudStorageAccount.Parse(azureConnectionString);
-            var client = account.CreateCloudTableClient();
-            IAuthentication authentication = new TableAuthentication(new AzureTable(client.GetTableReference("Authentication")));
+            IAuthentication authentication = new TokenAuthentication(authenticationToken);
             services.AddSingleton(authentication);
         }
 
@@ -50,6 +46,18 @@ namespace Inbox.Server {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
             });
+        }
+
+        private class TokenAuthentication : IAuthentication {
+            private readonly string token;
+
+            public TokenAuthentication(string token) {
+                this.token = token;
+            }
+
+            public bool IsValidToken(string token) {
+                return token == this.token;
+            }
         }
     }
 }

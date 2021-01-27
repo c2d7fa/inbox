@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Extensions.Logging;
-using Inbox.Server.TableStorage;
 
 namespace Inbox.Server.Pages {
     public class IndexModel : PageModel {
