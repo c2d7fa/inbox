@@ -27,18 +27,11 @@ namespace Inbox.Server {
                 Environment.Exit(1);
             }
 
-            var account = CloudStorageAccount.Parse(azureConnectionString);
-            var client = account.CreateCloudTableClient();
-            var azureStorage = new Messages(
-                new AzureTable(client.GetTableReference("UnreadMessages")),
-                new AzureTable(client.GetTableReference("ReadMessages"))
-            );
-
-            var postgresStorage = new PostgresStorage(postgresConnectionString);
-
-            IStorage storage = new MirroredStorage(azureStorage, postgresStorage);
+            IStorage storage = new PostgresStorage(postgresConnectionString);
             services.AddSingleton(storage);
 
+            var account = CloudStorageAccount.Parse(azureConnectionString);
+            var client = account.CreateCloudTableClient();
             IAuthentication authentication = new TableAuthentication(new AzureTable(client.GetTableReference("Authentication")));
             services.AddSingleton(authentication);
         }
