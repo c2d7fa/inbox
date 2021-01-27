@@ -23,7 +23,7 @@ namespace Inbox.Server {
             get {
                 var result = new List<Message>();
 
-                using var command = new NpgsqlCommand("SELECT id, created, HOST(author), content FROM unread", Connection);
+                using var command = new NpgsqlCommand("SELECT id, created, HOST(author), content FROM unread ORDER BY created", Connection);
                 using var reader = command.ExecuteReader();
                 while (reader.Read()) {
                     result.Add(
