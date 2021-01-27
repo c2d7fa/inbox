@@ -7,12 +7,10 @@ namespace Inbox.Server {
     public class PostgresStorage : IStorage {
         private readonly string connectionString;
 
-        private NpgsqlConnection Connection {
-            get {
-                var result = new NpgsqlConnection(connectionString);
-                result.Open();
-                return result;
-            }
+        private NpgsqlConnection Connect() {
+            var result = new NpgsqlConnection(connectionString);
+            result.Open();
+            return result;
         }
 
         public PostgresStorage(string connectionString) {
@@ -23,7 +21,8 @@ namespace Inbox.Server {
             get {
                 var result = new List<Message>();
 
-                using var command = new NpgsqlCommand("SELECT id, created, HOST(author), content FROM unread ORDER BY created", Connection);
+                using var connection = Connect();
+                using var command = new NpgsqlCommand("SELECT id, created, HOST(author), content FROM unread ORDER BY created", connection);
                 using var reader = command.ExecuteReader();
                 while (reader.Read()) {
                     result.Add(
@@ -41,7 +40,8 @@ namespace Inbox.Server {
         }
 
         public void Create(Guid uuid, IPAddress author, string content) {
-            using var command = new NpgsqlCommand("INSERT INTO message (id, created, author, content) VALUES (@id, NOW(), @author, @content)", Connection);
+            using var connection = Connect();
+            using var command = new NpgsqlCommand("INSERT INTO message (id, created, author, content) VALUES (@id, NOW(), @author, @content)", connection);
             command.Parameters.AddWithValue("id", uuid);
             command.Parameters.AddWithValue("author", author);
             command.Parameters.AddWithValue("content", content);
@@ -49,7 +49,8 @@ namespace Inbox.Server {
         }
 
         public void Read(Guid uuid) {
-            using var command = new NpgsqlCommand("INSERT INTO read (message_id) VALUES (@id)", Connection);
+            using var connection = Connect();
+            using var command = new NpgsqlCommand("INSERT INTO read (message_id) VALUES (@id)", connection);
             command.Parameters.AddWithValue("id", uuid);
             command.ExecuteNonQuery();
         }
