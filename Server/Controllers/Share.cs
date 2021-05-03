@@ -22,7 +22,7 @@ namespace Inbox.Server.Controllers {
                 return new StatusCodeResult(500);
             }
 
-            storage.Create(Guid.NewGuid(), author, message);
+            storage.Create(Guid.NewGuid(), author, message, false);
 
             return new ContentResult {
                 ContentType = "text/plain",
