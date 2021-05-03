@@ -22,7 +22,7 @@ namespace Inbox.Server {
                 var result = new List<Message>();
 
                 using var connection = Connect();
-                using var command = new NpgsqlCommand("SELECT id, created, HOST(author), content FROM unread ORDER BY created", connection);
+                using var command = new NpgsqlCommand("SELECT id, created, HOST(author), content, urgent FROM unread ORDER BY created", connection);
                 using var reader = command.ExecuteReader();
                 while (reader.Read()) {
                     result.Add(
@@ -30,7 +30,8 @@ namespace Inbox.Server {
                             reader.GetGuid(0),
                             reader.GetDateTime(1),
                             IPAddress.Parse(reader.GetString(2)),
-                            reader.GetString(3)
+                            reader.GetString(3),
+                            reader.GetBoolean(4)
                         )
                     );
                 }
@@ -39,12 +40,13 @@ namespace Inbox.Server {
             }
         }
 
-        public void Create(Guid uuid, IPAddress author, string content) {
+        public void Create(Guid uuid, IPAddress author, string content, bool isUrgent) {
             using var connection = Connect();
-            using var command = new NpgsqlCommand("INSERT INTO message (id, created, author, content) VALUES (@id, NOW(), @author, @content)", connection);
+            using var command = new NpgsqlCommand("INSERT INTO message (id, created, author, content, urgent) VALUES (@id, NOW(), @author, @content, @urgent)", connection);
             command.Parameters.AddWithValue("id", uuid);
             command.Parameters.AddWithValue("author", author);
             command.Parameters.AddWithValue("content", content);
+            command.Parameters.AddWithValue("urgent", isUrgent);
             command.ExecuteNonQuery();
         }
 

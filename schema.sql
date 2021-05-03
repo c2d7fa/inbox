@@ -2,7 +2,8 @@ CREATE TABLE message (
   id UUID PRIMARY KEY,
   author INET CHECK (HOST(author) = ABBREV(author)) NOT NULL, -- Just the host
   created TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-  content TEXT NOT NULL DEFAULT ''
+  content TEXT NOT NULL DEFAULT '',
+  urgent BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE read (

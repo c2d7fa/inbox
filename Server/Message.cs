@@ -8,12 +8,14 @@ namespace Inbox.Server {
         public DateTime Created { get; }
         public IPAddress Author { get; }
         public string Content { get; }
+        public bool IsUrgent { get; }
 
-        public Message(Guid uuid, DateTime created, IPAddress author, string content) {
+        public Message(Guid uuid, DateTime created, IPAddress author, string content, bool isUrgent) {
             Uuid = uuid;
             Created = created;
             Author = author;
             Content = content;
+            IsUrgent = isUrgent;
         }
 
         public string HtmlContent {

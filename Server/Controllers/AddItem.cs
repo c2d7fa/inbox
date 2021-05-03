@@ -21,7 +21,9 @@ namespace Inbox.Server.Controllers {
                 return new StatusCodeResult(500);
             }
 
-            storage.Create(Guid.NewGuid(), author, content);
+            var isUrgent = HttpHelper.GetForm(Request, "urgent") != null;
+
+            storage.Create(Guid.NewGuid(), author, content, isUrgent);
 
             return HttpHelper.FinalResponse(Request);
         }
