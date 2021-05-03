@@ -47,7 +47,7 @@
             </thead>
             <tbody>
             @foreach (var message in Model.Messages.Unread) {
-                <tr>
+                <tr style="@(message.IsUrgent ? "background-color:#fea;" : "")">
                     <td class="message">@Html.Raw(message.HtmlContent)</td>
                     <td>@message.Created.ToString("ddd, dd MMM, yyyy")</td>
                     <td>@message.Created.ToString("HH:mm:ss")</td>
