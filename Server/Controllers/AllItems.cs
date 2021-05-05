@@ -22,6 +22,7 @@ namespace Inbox.Server.Controllers {
                 message.Content,
                 message.HtmlContent,
                 Author = message.Author.ToString(),
+                Urgent = message.IsUrgent,
             }));
         }
     }
