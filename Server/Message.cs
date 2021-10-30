@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Web;
+using System.Text.RegularExpressions;
 
 namespace Inbox.Server {
     public class Message {
@@ -20,11 +21,17 @@ namespace Inbox.Server {
 
         public string HtmlContent {
             get {
-                if (Content.StartsWith("https://")) {
-                    return $"<a href=\"{HttpUtility.HtmlAttributeEncode(Content)}\">{HttpUtility.HtmlEncode(Content)}</a>";
-                } else {
-                    return HttpUtility.HtmlEncode(Content);
+                string LinkUrls(string content) {
+                    var urlRegex = new Regex(@"(https)://\S+");
+                    var html = urlRegex.Replace(content, match => {
+                        var url = match.Value;
+                        return $"<a href=\"{url}\">{url}</a>";
+                    });
+                    return html;
                 }
+
+                var encodedContent = HttpUtility.HtmlEncode(Content);
+                return LinkUrls(encodedContent);
             }
         }
     }
