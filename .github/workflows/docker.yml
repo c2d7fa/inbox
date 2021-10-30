@@ -1,0 +1,29 @@
+name: Build and deploy Docker image
+on:
+  push:
+    branches:
+      - master
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository 
+        uses: actions/checkout@v2
+      - name: Log in to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: c2d7fa
+          password: ${{ secrets.docker_password }}
+      - name: Construct tags for Docker image
+        run: |
+          TAGS="c2d7fa/inbox:latest,c2d7fa/inbox:$(date +%Y%m%d%H%M%S)"
+          echo ::set-output name=tags::$TAGS
+        id: construct-tags
+      - name: Build and push image
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: ${{ steps.construct-tags.outputs.tags }}
+        id: docker-build-push
+      - name: Print image digest
+        run: echo ${{ steps.docker-build-push.outputs.digest }}
